@@ -1,42 +1,38 @@
-# PrimeHub Premium Store V2
+# Prime Hub Bot V3 — Manual + Automatic Payments
 
-Premium Telegram digital store bot.
+Telegram digital-product store with PostgreSQL customer/order storage, product images, manual payment proof review, NOWPayments crypto confirmation, stock/sold tracking, and automatic delivery.
 
-## Features
+## Payment menu
 
-- Beautiful storefront
-- Product images
-- Categories
-- Product cards
-- Reviews button
-- Support button
-- My Orders
-- Admin commands
-- Option B payment menu
-- NOWPayments direct payment generation
-- Automatic payment verification through IPN
-- Instant delivery after confirmed payment
+- 💰 Pay with Wallet — manual proof and admin approval
+- 🟡 Pay with Binance — manual proof and admin approval
+- ⚪ Pay with USDT (BEP20) — automatic through NOWPayments
+- ⚪ Pay with USDT (TRC20) — automatic through NOWPayments
+- ⚪ Pay with UPI — manual proof and admin approval
 
-## Railway Variables
+## Manual verification flow
 
-```env
-BOT_TOKEN=your_botfather_token
-ADMIN_IDS=your_numeric_telegram_id
-DATABASE_URL=railway_postgres_database_url
-PUBLIC_URL=https://your-railway-domain.up.railway.app
-NOWPAYMENTS_API_KEY=your_nowpayments_api_key
-NOWPAYMENTS_IPN_SECRET=your_ipn_secret
-STORE_NAME=PrimeHub Store
-CURRENCY=usd
-SUPPORT_USERNAME=YourTelegramSupportUsernameWithout@
-REVIEWS_TEXT=⭐ 4.9/5 Customer Rating\n✅ Instant delivery\n🛡 Friendly replacement support
-WELCOME_IMAGE_FILE_ID=
-```
+1. Customer chooses Wallet, Binance, or UPI.
+2. Bot creates an order and shows the configured payment destination.
+3. Customer sends a screenshot, receipt, transaction ID, or UTR.
+4. Every configured admin receives the proof with **Approve & Deliver** and **Reject** buttons.
+5. Approval delivers the product once and saves the final status.
+6. Rejection notifies the customer.
 
-NOWPayments webhook URL:
+Always verify that the money arrived in the real Wallet, Binance, or PhonePe account before approving.
+
+## Railway variables
+
+Copy all values from `.env.example` into Railway → service → Variables.
+
+`ADMIN_IDS` must contain numeric Telegram user IDs. Multiple IDs may be comma-separated.
+
+For UPI, set `UPI_INR_PER_USD` to the conversion rate used by your store and update it when needed.
+
+## NOWPayments webhook
 
 ```text
-https://your-railway-domain.up.railway.app/nowpayments-webhook
+https://YOUR-DOMAIN.up.railway.app/nowpayments-webhook
 ```
 
 ## Admin commands
@@ -50,29 +46,8 @@ https://your-railway-domain.up.railway.app/nowpayments-webhook
 /stats
 ```
 
-## Add product flow
+## Railway start command
 
-The bot asks:
-
-1. Category
-2. Product name
-3. Price
-4. Description
-5. Product image/photo or `skip`
-6. Delivery content
-7. Whether delivery is a Telegram file_id
-
-## Payment menu
-
-Working through NOWPayments:
-- USDT TRC20
-- USDT BEP20
-- BTC
-- LTC
-
-Placeholders:
-- Telegram Wallet
-- Binance Pay
-- UPI
-
-These placeholders can be connected later when merchant/API credentials are ready.
+```text
+python -m app.main
+```
